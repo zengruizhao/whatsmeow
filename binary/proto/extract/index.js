@@ -8,13 +8,13 @@ const addPrefix = (lines, prefix) => lines.map(line => prefix + line)
 async function findAppModules(mods) {
     const ua = {
         headers: {
-            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:111.0) Gecko/20100101 Firefox/111.0",
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0",
             "Sec-Fetch-Dest": "script",
             "Sec-Fetch-Mode": "no-cors",
             "Sec-Fetch-Site": "same-origin",
             "Referer": "https://web.whatsapp.com/",
             "Accept": "*/*", /**/
-            "Accept-Language": "Accept-Language: en-US,en;q=0.5",
+            "Accept-Language": "en-US,en;q=0.5",
         }
     }
     const baseURL = "https://web.whatsapp.com"
@@ -23,7 +23,7 @@ async function findAppModules(mods) {
     const appURL = baseURL + "/app." + appID + ".js"
     console.error("Found app.js URL:", appURL)
     const qrData = await request.get(appURL, ua)
-    const waVersion = qrData.match(/appVersion:"(\d\.\d+\.\d+)"/)[1]
+    const waVersion = qrData.match(/VERSION_BASE="(\d\.\d+\.\d+)"/)[1]
     console.log("Current version:", waVersion)
     // This one list of types is so long that it's split into two JavaScript declarations.
     // The module finder below can't handle it, so just patch it manually here.
@@ -41,16 +41,21 @@ async function findAppModules(mods) {
         533494, // Message, ..., RequestPaymentMessage, Reaction, QuickReplyButton, ..., ButtonsResponseMessage, ActionLink, ...
         199931, // EphemeralSetting
         60370, // WallpaperSettings, Pushname, MediaVisibility, HistorySync, ..., GroupParticipant, ...
-        412744, // PollEncValue, MsgOpaqueData, MsgRowOpaqueData
+        //412744, // PollEncValue, MsgOpaqueData, MsgRowOpaqueData
         229479, // ServerErrorReceipt, MediaRetryNotification, MediaRetryNotificationResult
         933734, // MessageKey
-        150715, // Duplicate of MessageKey
-        984084, // SyncdVersion, SyncdValue, ..., SyncdPatch, SyncdMutation, ..., ExitCode
-        517244, // SyncActionValue, ..., UnarchiveChatsSetting, SyncActionData, StarAction, ...
+        557871, // Duplicate of MessageKey
+        679905, // SyncdVersion, SyncdValue, ..., SyncdPatch, SyncdMutation, ..., ExitCode
+        623420, // SyncActionValue, ..., UnarchiveChatsSetting, SyncActionData, StarAction, ...
+        //527796, // Duplicate of 623420, but without CallLogRecord
         759089, // VerifiedNameCertificate, LocalizedName, ..., BizIdentityInfo, BizAccountLinkInfo, ...
         614806, // HandshakeMessage, ..., ClientPayload, ..., AppVersion, UserAgent, WebdPayload ...
         968923, // Reaction, UserReceipt, ..., PhotoChange, ..., WebFeatures, ..., WebMessageInfoStatus, ...
-        698723, // NoiseCertificate, CertChain
+        623641, // NoiseCertificate, CertChain
+        //867311, // ChatRowOpaqueData, ...
+        //2336, // SignalMessage, ...
+        //984661, // SessionStructure, ...
+        853721, // QP
     ]
     const unspecName = name => name.endsWith("Spec") ? name.slice(0, -4) : name
     const unnestName = name => name.replace("Message$", "").replace("SyncActionValue$", "") // Don't nest messages into Message, that's too much nesting
